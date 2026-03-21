@@ -24,16 +24,14 @@ let cachedJwtSecret: string | null = null;
 // AUTHENTICATION CLIENT
 // ---------------------------------------------------------
 class AuthClient {
-   public async loadSecrets(): Promise<void> {
-      // 1. The Cache Check: If both exist in memory, instantly return!
-      if (cachedAdminCode && cachedJwtSecret) return;
+public async loadSecrets(): Promise<void> {
+      if (cachedAdminCode && cachedJwtSecret) return; 
 
       try {
-         // 2. Fetch both secrets in a single network request
          const command = new GetParametersCommand({
             Names: [
-               "turquesa.shop/auth/admin-password",
-               "turquesa.shop/auth/jwt-secret"
+               "/turquesa.shop/auth/admin-password",
+               "/turquesa.shop/auth/jwt-secret"
             ],
             WithDecryption: true
          });
@@ -41,10 +39,10 @@ class AuthClient {
          const response = await ssmClient.send(command);
 
          response.Parameters?.forEach(param => {
-            if (param.Name === "turquesa.shop/auth/admin-password") {
+            if (param.Name === "/turquesa.shop/auth/admin-password") {
                cachedAdminCode = param.Value || null;
             }
-            if (param.Name === "turquesa.shop/auth/jwt-secret") {
+            if (param.Name === "/turquesa.shop/auth/jwt-secret") {
                cachedJwtSecret = param.Value || null;
             }
          });

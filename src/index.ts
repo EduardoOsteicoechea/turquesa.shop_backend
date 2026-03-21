@@ -62,7 +62,7 @@ export const handler = async (event: any) => {
             "Content-Type": "application/json"
          },
          body: JSON.stringify({
-            error: error.message,
+            error: error,
             thePathLambdaSaw: event.rawPath
          })
       };

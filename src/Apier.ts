@@ -63,6 +63,34 @@ public async loadSecrets(): Promise<void> {
       const token = jwt.sign({ role: "admin" }, cachedJwtSecret, { expiresIn: "1h" });
       return `admin_session=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`;
    }
+
+   public sessionIsValid(event: any): boolean {
+      if (!cachedJwtSecret) return false;
+
+      try {
+         // AWS handles cookies slightly differently depending on API Gateway version
+         // This safely checks both Payload v1 (headers) and Payload v2 (cookies array)
+         const rawCookieHeader = event.headers?.cookie || event.headers?.Cookie || "";
+         const cookiesArray = event.cookies || rawCookieHeader.split(";").map((c: string) => c.trim());
+
+         // Find our specific session cookie
+         const sessionCookie = cookiesArray.find((c: string) => c.startsWith("admin_session="));
+         if (!sessionCookie) return false;
+
+         // Extract just the token part
+         const token = sessionCookie.split("=")[1];
+         
+         // Verify the signature and expiration time
+         // If it is tampered with or expired, this will throw an error and jump to the catch block
+         jwt.verify(token, cachedJwtSecret);
+         
+         return true;
+
+      } catch (err) {
+         console.error("JWT Verification failed:", err);
+         return false;
+      }
+   }
 }
 
 // ---------------------------------------------------------
@@ -96,6 +124,7 @@ class Request {
    public isProducts: boolean;
    public isRegister: boolean;
    public isLogin: boolean;
+   public isAuthenticated: boolean;
 
    constructor(event: any) {
       this._requestRoute = event?.rawPath || "";
@@ -104,6 +133,7 @@ class Request {
       this.isProducts = this._requestRoute === "/api/products";
       this.isRegister = this._requestRoute === "/api/register";
       this.isLogin = this._requestRoute === "/api/login";
+      this.isAuthenticated = this._requestRoute === "/api/is-authenticated";
    }
 }
 

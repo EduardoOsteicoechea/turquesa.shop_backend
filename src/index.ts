@@ -18,13 +18,20 @@ export const handler = async (event: any) => {
          const cookieString = apier.auth.generateSessionCookie();
          apier.res.setAuthCookie(cookieString);
          return apier.res.send({ message: "Login successful!" }, 200);
+      }      
+
+      // --- IS AUTHENTICATED ROUTE ---
+      if (apier.req.isAuthenticated && apier.method.isGet) {
+         await apier.auth.loadSecrets();
+         if(apier.auth.sessionIsValid(event)) return apier.res.send({ message: "Authenticated!" }, 200);
+         else return apier.res.send({ error: "Unauthorized or session expired" }, 401);
       }
 
       // --- REGISTER ROUTE ---
-      if (apier.req.isRegister && apier.method.isPost) {
-         const newUser = await apier.db.create("turquesa.shop_users", requestBody);
-         return apier.res.send(newUser, 201);
-      }
+      // if (apier.req.isRegister && apier.method.isPost) {
+      //    const newUser = await apier.db.create("turquesa.shop_users", requestBody);
+      //    return apier.res.send(newUser, 201);
+      // }
 
       // --- HEALTH ROUTE ---
       if (apier.req.isHealth) {

@@ -41,10 +41,10 @@ class AuthClient {
          const response = await ssmClient.send(command);
 
          response.Parameters?.forEach(param => {
-            if (param.Name === "turquesa.store/auth/admin-password") {
+            if (param.Name === "turquesa.shop/auth/admin-password") {
                cachedAdminCode = param.Value || null;
             }
-            if (param.Name === "turquesa.store/auth/jwt-secret") {
+            if (param.Name === "turquesa.shop/auth/jwt-secret") {
                cachedJwtSecret = param.Value || null;
             }
          });

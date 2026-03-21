@@ -62,7 +62,7 @@ export const handler = async (event: any) => {
             "Content-Type": "application/json"
          },
          body: JSON.stringify({
-            error: error,
+            error: error.message || "Unknown error occurred",
             thePathLambdaSaw: event.rawPath
          })
       };

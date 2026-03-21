@@ -32,8 +32,8 @@ class AuthClient {
          // 2. Fetch both secrets in a single network request
          const command = new GetParametersCommand({
             Names: [
-               "turquesa.store/auth/admin-password",
-               "turquesa.store/auth/jwt-secret"
+               "turquesa.shop/auth/admin-password",
+               "turquesa.shop/auth/jwt-secret"
             ],
             WithDecryption: true
          });

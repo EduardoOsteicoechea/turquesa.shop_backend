@@ -31,7 +31,7 @@ export const handler = async (event) => {
                   image_name: "10018.jpg"
                }, {
                   name: "b",
-                  price: 2,
+                  price: 2, 
                   image_name: "10033.jpg"
                }
             ]

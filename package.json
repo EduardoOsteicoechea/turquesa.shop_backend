@@ -1,6 +1,7 @@
 {
    "scripts": {
-      "build": "esbuild src/index.ts --bundle --platform=node --target=es2022 --external:@aws-sdk/* --outfile=dist/index.mjs --format=esm"
+      "dev": "tsx watch server.ts",
+      "build": "esbuild src/index.ts --bundle --platform=node --target=es2022 --external:@aws-sdk/* --outfile=dist/index.mjs --format=esm --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\""
    },
    "name": "backend",
    "version": "1.0.0",

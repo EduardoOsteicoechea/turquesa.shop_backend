@@ -7,9 +7,13 @@ export const handler = async (event: any) => {
       // 1. Safely parse the body ONLY if it exists
       const requestBody = event.body ? JSON.parse(event.body) : {};
 
-      if (event.requestContext && apier.method.isOptions) {
-         return apier.res.send();
+      if (apier.method.isOptions) {
+         return apier.res.send(null, 200);
       }
+
+      // if (event.requestContext && apier.method.isOptions) {
+      //    return apier.res.send();
+      // }
 
       // --- LOGIN ROUTE ---
       if (apier.req.isLogin && apier.method.isPost) {

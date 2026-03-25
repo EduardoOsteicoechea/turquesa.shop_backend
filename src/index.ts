@@ -27,12 +27,6 @@ export const handler = async (event: any) => {
          else return apier.res.send({ error: "Unauthorized or session expired" }, 401);
       }
 
-      // --- REGISTER ROUTE ---
-      // if (apier.req.isRegister && apier.method.isPost) {
-      //    const newUser = await apier.db.create("turquesa.shop_users", requestBody);
-      //    return apier.res.send(newUser, 201);
-      // }
-
       // --- HEALTH ROUTE ---
       if (apier.req.isHealth) {
          return apier.res.send({ message: "Enabled" });

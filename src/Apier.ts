@@ -61,7 +61,8 @@ public async loadSecrets(): Promise<void> {
       if (!cachedJwtSecret) throw new Error("JWT Secret missing from Parameter Store");
       
       const token = jwt.sign({ role: "admin" }, cachedJwtSecret, { expiresIn: "1h" });
-      return `admin_session=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`;
+      return `admin_session=${token}; HttpOnly; Secure; SameSite=None; Max-Age=3600; Path=/`;
+      // return `admin_session=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`;
    }
 
    public sessionIsValid(event: any): boolean {
@@ -96,14 +97,44 @@ public async loadSecrets(): Promise<void> {
 // ---------------------------------------------------------
 // API WRAPPER CLASSES
 // ---------------------------------------------------------
-class Response {
-   private _headers: Record<string, string> = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Content-Type": "application/json"
-   };
+// class Response {
+//    private _headers: Record<string, string> = {
+//       "Access-Control-Allow-Origin": "*",
+//       "Access-Control-Allow-Headers": "Content-Type",
+//       "Content-Type": "application/json"
+//    };
 
-   // Now simply takes the generated string from the AuthClient
+//    // Now simply takes the generated string from the AuthClient
+//    public setAuthCookie(cookieString: string) {
+//       this._headers["Set-Cookie"] = cookieString;
+//    }
+
+//    public send(value: any = null, statusCode: number = 200) {
+//       return {
+//          statusCode: statusCode,
+//          headers: this._headers,
+//          body: value ? JSON.stringify(value) : ""
+//       };
+//    }
+// }
+class Response {
+   private _headers: Record<string, string>;
+
+   // Update the constructor to accept the event
+   constructor(event: any) {
+      // Safely grab the origin making the request
+      const origin = event?.headers?.origin || event?.headers?.Origin || "*";
+
+      this._headers = {
+         // Echo the exact origin instead of using "*"
+         "Access-Control-Allow-Origin": origin, 
+         // THIS IS REQUIRED FOR COOKIES TO WORK
+         "Access-Control-Allow-Credentials": "true", 
+         "Access-Control-Allow-Headers": "Content-Type",
+         "Content-Type": "application/json"
+      };
+   }
+
    public setAuthCookie(cookieString: string) {
       this._headers["Set-Cookie"] = cookieString;
    }
@@ -205,7 +236,8 @@ export default class Apier {
 
    constructor(event: any) {
       this.req = new Request(event);
-      this.res = new Response();
+      // this.res = new Response();
+      this.res = new Response(event);
       this.method = new Method(event);
       this.db = new DbClient();
       this.auth = new AuthClient();

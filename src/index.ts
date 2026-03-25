@@ -14,10 +14,10 @@ export const handler = async (event: any) => {
       // --- LOGIN ROUTE ---
       if (apier.req.isLogin && apier.method.isPost) {
          await apier.auth.loadSecrets();
-         if (!apier.auth.isValidAdmin(requestBody.code)) return apier.res.send({ error: "Unauthorized" }, 401);
+         if (!apier.auth.isValidAdmin(requestBody.code)) return apier.res.send({ error: "Credenciales inválidas" }, 401);
          const cookieString = apier.auth.generateSessionCookie();
          apier.res.setAuthCookie(cookieString);
-         return apier.res.send({ message: "Login successful!" }, 200);
+         return apier.res.send({ message: "Acceso concedido" }, 200);
       }      
 
       // --- IS AUTHENTICATED ROUTE ---

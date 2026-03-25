@@ -24,8 +24,8 @@ let cachedJwtSecret: string | null = null;
 // AUTHENTICATION CLIENT
 // ---------------------------------------------------------
 class AuthClient {
-public async loadSecrets(): Promise<void> {
-      if (cachedAdminCode && cachedJwtSecret) return; 
+   public async loadSecrets(): Promise<void> {
+      if (cachedAdminCode && cachedJwtSecret) return;
 
       try {
          const command = new GetParametersCommand({
@@ -57,14 +57,19 @@ public async loadSecrets(): Promise<void> {
       return cachedAdminCode === receivedCode;
    }
 
+   // public generateSessionCookie(): string {
+   //    if (!cachedJwtSecret) throw new Error("JWT Secret missing from Parameter Store");
+
+   //    const token = jwt.sign({ role: "admin" }, cachedJwtSecret, { expiresIn: "1h" });
+   //    return `admin_session=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`;
+   // }
    public generateSessionCookie(): string {
       if (!cachedJwtSecret) throw new Error("JWT Secret missing from Parameter Store");
-      
       const token = jwt.sign({ role: "admin" }, cachedJwtSecret, { expiresIn: "1h" });
+      // CHANGED: SameSite=Strict -> SameSite=None
       return `admin_session=${token}; HttpOnly; Secure; SameSite=None; Max-Age=3600; Path=/`;
-      // return `admin_session=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`;
    }
-
+   
    public sessionIsValid(event: any): boolean {
       if (!cachedJwtSecret) return false;
 
@@ -80,11 +85,11 @@ public async loadSecrets(): Promise<void> {
 
          // Extract just the token part
          const token = sessionCookie.split("=")[1];
-         
+
          // Verify the signature and expiration time
          // If it is tampered with or expired, this will throw an error and jump to the catch block
          jwt.verify(token, cachedJwtSecret);
-         
+
          return true;
 
       } catch (err) {
@@ -127,9 +132,9 @@ class Response {
 
       this._headers = {
          // Echo the exact origin instead of using "*"
-         "Access-Control-Allow-Origin": origin, 
+         "Access-Control-Allow-Origin": origin,
          // THIS IS REQUIRED FOR COOKIES TO WORK
-         "Access-Control-Allow-Credentials": "true", 
+         "Access-Control-Allow-Credentials": "true",
          "Access-Control-Allow-Headers": "Content-Type",
          "Content-Type": "application/json"
       };

@@ -69,7 +69,7 @@ class AuthClient {
       // CHANGED: SameSite=Strict -> SameSite=None
       return `admin_session=${token}; HttpOnly; Secure; SameSite=None; Max-Age=3600; Path=/`;
    }
-   
+
    public sessionIsValid(event: any): boolean {
       if (!cachedJwtSecret) return false;
 
@@ -125,17 +125,15 @@ class AuthClient {
 class Response {
    private _headers: Record<string, string>;
 
-   // Update the constructor to accept the event
    constructor(event: any) {
-      // Safely grab the origin making the request
+      // Safely grab the exact origin making the request
       const origin = event?.headers?.origin || event?.headers?.Origin || "*";
 
       this._headers = {
-         // Echo the exact origin instead of using "*"
-         "Access-Control-Allow-Origin": origin,
-         // THIS IS REQUIRED FOR COOKIES TO WORK
-         "Access-Control-Allow-Credentials": "true",
-         "Access-Control-Allow-Headers": "Content-Type",
+         "Access-Control-Allow-Origin": origin, 
+         "Access-Control-Allow-Credentials": "true", // MUST BE TRUE
+         "Access-Control-Allow-Headers": "Content-Type, Authorization", // Added common allowed headers
+         "Access-Control-Allow-Methods": "OPTIONS, GET, POST, PUT, DELETE, PATCH", // Explicitly allow methods
          "Content-Type": "application/json"
       };
    }

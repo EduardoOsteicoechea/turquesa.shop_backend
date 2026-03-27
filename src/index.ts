@@ -96,6 +96,7 @@ export const handler = async (event: any) => {
             });
 
             console.log("Extracted Product Data:", productData);
+            
             if (uploadedImage) console.log("Extracted Image:", uploadedImage.filename);
 
             return apier.res.send({
